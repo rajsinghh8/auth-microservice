@@ -1,4 +1,4 @@
-COMMIT_MESSAGE: Add service monitoring endpoint
+COMMIT_MESSAGE: Add API endpoint to return the complete user list
 
 ## Features Added
 - Added `GET /api/v1/monitor/services`, which reports the aggregate Spring Actuator health status of the running microservice.
