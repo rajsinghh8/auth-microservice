@@ -51,3 +51,8 @@ __pycache__/
 target/
 build/
 .gradle/
+
+# Platform-generated delivery artifacts (not part of source control)
+api_test_report.xlsx
+changes_report.docx
+start_8c01abe82eacaf6a.sh

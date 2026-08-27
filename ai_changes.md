@@ -1,19 +1,17 @@
-COMMIT_MESSAGE: Finalize Oracle profiles and externalize JWT secret configuration
+COMMIT_MESSAGE: Configure Oracle profiles on the required service port
 
 ## Features Added
-- Oracle is the configured Spring Data JPA runtime database for the base, `local`, and `prod` profiles, using environment-overridable Oracle Thin JDBC URLs and the Oracle JDBC driver.
-- The service port is configured as 23070 and Actuator health exposure remains enabled.
-- AWS Secrets Manager's JWT secret identifier is configurable through an environment-backed application property.
+- Oracle remains the Spring Data JPA runtime database for the base, `local`, and `prod` profiles through environment-overridable Oracle Thin JDBC URLs and the Oracle JDBC driver.
+- The service is configured to run on port 22844, with Actuator health exposure retained.
 
 ## Files Modified
-- src/main/resources/application.properties — retains the Oracle datasource configuration, sets port 23070, and defines the AWS JWT secret-name property.
-- src/main/java/com/gab/authservice/service/JwtService.java — reads the AWS JWT secret identifier from configuration instead of a hardcoded value.
+- src/main/resources/application.properties — configures the required port 22844 while retaining the Oracle datasource, Oracle driver, and health endpoint exposure.
 
 ## Files Added
 - None.
 
 ## Secrets Moved
-- JwtService.secretName -> app.secret.aws-jwt-secret-name
+- None in this change; the existing AWS JWT secret-name configuration remains externalized as `app.secret.aws-jwt-secret-name`.
 
 ## DB URLs Resolved
 - jdbc:postgresql://localhost:5432/authdb -> ${ORACLE_DB_URL:jdbc:oracle:thin:@//localhost:1521/FREEPDB1}
