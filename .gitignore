@@ -38,3 +38,16 @@ build/
 # Keys
 src/main/resources/keys/*.pem
 src/test/resources/keys/*.pem
+
+# Local development and AI tooling artifacts
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.code_index/
+target/
+build/
+.gradle/

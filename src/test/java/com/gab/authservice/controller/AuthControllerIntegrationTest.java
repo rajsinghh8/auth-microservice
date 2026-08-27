@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -45,19 +45,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("local")
 class AuthControllerIntegrationTest {
 
-    // Spins up a real PostgreSQL container for the test
+    // Spins up a real Oracle Free container for the test
     @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17")
-            .withDatabaseName("testdb") // Name of the test database
-            .withUsername("testuser")   // Username for the test DB
-            .withPassword("testpass"); // Password for the test DB
+    static OracleContainer oracle = new OracleContainer("gvenzl/oracle-free:23-slim-faststart")
+            .withUsername("testuser")
+            .withPassword("testpass");
 
-    // Injects the container's DB connection details into Spring Boot, instead of using the actual postgres config in application.properties
+    // Injects the container's Oracle connection details into Spring Boot.
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.datasource.url", oracle::getJdbcUrl);
+        registry.add("spring.datasource.username", oracle::getUsername);
+        registry.add("spring.datasource.password", oracle::getPassword);
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
         registry.add("aws.secrets.enabled", () -> "false");
     }
