@@ -44,7 +44,9 @@ public class JwtService {
     private String publicKeyPath;
     
     // AWS configuration
-    private final String secretName = "auth-microservice/jwt/keys";
+    @Value("${app.secret.aws-jwt-secret-name}")
+    private String secretName;
+
     private final Region region = Region.of("us-east-1");
     private SecretsManagerClient client;
 

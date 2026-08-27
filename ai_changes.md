@@ -1,26 +1,19 @@
-COMMIT_MESSAGE: Migrate database configuration and container setup to Oracle
+COMMIT_MESSAGE: Finalize Oracle profiles and externalize JWT secret configuration
 
 ## Features Added
-- Migrated Spring Data JPA runtime support from PostgreSQL to Oracle using the Oracle JDBC driver.
-- Configured Oracle datasource URLs and driver settings for the base, `local`, and `prod` profiles while keeping environment-variable overrides.
-- Migrated the integration-test container to Oracle Free and migrated the Docker Compose database service to Oracle Free.
-- Aligned the application, Docker Compose, Docker health check, and documented service URLs with port `24018`.
+- Oracle is the configured Spring Data JPA runtime database for the base, `local`, and `prod` profiles, using environment-overridable Oracle Thin JDBC URLs and the Oracle JDBC driver.
+- The service port is configured as 23070 and Actuator health exposure remains enabled.
+- AWS Secrets Manager's JWT secret identifier is configurable through an environment-backed application property.
 
 ## Files Modified
-- pom.xml — uses Oracle JDBC at runtime and the Oracle XE Testcontainers module.
-- src/main/resources/application.properties — defines the default Oracle datasource, Oracle driver, actuator exposure, and port 24018.
-- src/main/resources/application-local.properties — retains the local profile with an overridable Oracle datasource URL.
-- src/main/resources/application-prod.properties — retains the production profile with an overridable Oracle datasource URL.
-- src/test/java/com/gab/authservice/controller/AuthControllerIntegrationTest.java — uses an Oracle Free Testcontainer for persistence integration coverage.
-- docker-compose.yml — provisions Oracle Free and supplies the Oracle production datasource URL on port 24018.
-- Dockerfile — checks the Actuator health endpoint on port 24018.
-- README.md — documents Oracle prerequisites, profile URLs, test container, and service URLs.
+- src/main/resources/application.properties — retains the Oracle datasource configuration, sets port 23070, and defines the AWS JWT secret-name property.
+- src/main/java/com/gab/authservice/service/JwtService.java — reads the AWS JWT secret identifier from configuration instead of a hardcoded value.
 
 ## Files Added
 - None.
 
 ## Secrets Moved
-- None; no hardcoded credentials or token values were found in production Java source.
+- JwtService.secretName -> app.secret.aws-jwt-secret-name
 
 ## DB URLs Resolved
 - jdbc:postgresql://localhost:5432/authdb -> ${ORACLE_DB_URL:jdbc:oracle:thin:@//localhost:1521/FREEPDB1}
