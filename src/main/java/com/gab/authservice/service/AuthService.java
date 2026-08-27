@@ -2,6 +2,7 @@ package com.gab.authservice.service;
 
 import com.gab.authservice.dto.LoginRequest;
 import com.gab.authservice.dto.SignupRequest;
+import com.gab.authservice.dto.UserResponse;
 import com.gab.authservice.entity.Role;
 import com.gab.authservice.entity.User;
 import com.gab.authservice.repository.UserRepository;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -45,4 +47,9 @@ public class AuthService {
         return jwtService.generateToken(user);
     }
 
+    public List<com.gab.authservice.dto.UserResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(com.gab.authservice.dto.UserResponse::from)
+                .toList();
+    }
 }
