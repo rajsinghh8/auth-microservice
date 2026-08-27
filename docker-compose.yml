@@ -2,29 +2,31 @@ services:
   auth-service:
     image: ghcr.io/${GITHUB_REPOSITORY}:latest
     ports:
-      - "8080:8080"
+      - "20910:20910"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - SERVER_PORT=20910
+      - ORACLE_DB_URL=jdbc:oracle:thin:@//oracle:1521/FREEPDB1
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_DEFAULT_REGION=us-east-1
     depends_on:
-      - postgres
+      - oracle
     restart: unless-stopped
 
-  postgres:
-    image: postgres:latest
+  oracle:
+    image: gvenzl/oracle-free:23-slim-faststart
     environment:
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=authdb
+      - ORACLE_PASSWORD=${ORACLE_PASSWORD}
+      - APP_USER=${DB_USERNAME}
+      - APP_USER_PASSWORD=${DB_PASSWORD}
     ports:
-      - "5432:5432"
+      - "1521:1521"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - oracle_data:/opt/oracle/oradata
     restart: unless-stopped
 
 volumes:
-  postgres_data: 
+  oracle_data: 

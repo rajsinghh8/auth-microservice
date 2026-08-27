@@ -8,7 +8,7 @@ This microservice provides secure user management and JWT-based authentication.
 - User registration and login
 - JWT-based authentication
 - Secure password handling (RSA public/private key pair)
-- PostgreSQL database integration (containerized with Docker)
+- Oracle database integration
 - Environment-based configuration with profile support (local/prod) and secure secrets management
 - Input validation using Jakarta Validation (Bean Validation 3.0)
 - RESTful API design
@@ -23,13 +23,13 @@ This microservice provides secure user management and JWT-based authentication.
 - Lombok
 - Maven
 - JWT (JSON Web Tokens)
-- PostgreSQL
+- Oracle Database
 
 ## Prerequisites (for local development)
 
 - Java 17 or higher
 - Maven
-- PostgreSQL database
+- Oracle Database (for example, Oracle Database Free)
 - Environment variables configured
 - Docker & Docker Compose (for containerized setup)
 
@@ -49,7 +49,7 @@ DB_PASSWORD=your_local_db_password
 
 **Run locally:**
 ```bash
-# Uses .env file and local PostgreSQL
+# Uses .env file and local Oracle. ORACLE_DB_URL defaults to jdbc:oracle:thin:@//localhost:1521/FREEPDB1.
 ./mvnw spring-boot:run -Dspring.profiles.active=local
 ```
 
@@ -85,8 +85,8 @@ Production uses **AWS Secrets Manager** for secure configuration management:
    docker-compose build --no-cache
    docker-compose up
    ```
-2. The service will be available at `http://localhost:8080`.
-3. PostgreSQL will be available at `localhost:5432` (inside the Docker network, use `postgres` as the hostname).
+2. The service will be available at `http://localhost:24018`.
+3. Oracle Free will be available at `localhost:1521` (inside the Docker network, use `oracle` as the hostname).
 
 ## API Documentation
 
@@ -126,7 +126,7 @@ Response:
 "jwt_token_string"
 ```
 
-Swagger docs at `http://localhost:8080/swagger-ui/index.html`
+Swagger docs at `http://localhost:24018/swagger-ui/index.html`
 
 ## Building and Running (without Docker)
 
@@ -161,10 +161,10 @@ src/main/java/com/gab/resources/keys
 ```
 
 ### Database Configuration
-The service uses PostgreSQL. Make sure to:
-1. Have PostgreSQL installed and running
-2. Create a database for the service
-3. Configure the database connection in your environment variables (db password and username)
+The service uses Oracle Database for both the `local` and `prod` profiles. Make sure to:
+1. Have an Oracle database available.
+2. Set `ORACLE_DB_URL` when the default profile URL is not appropriate (`jdbc:oracle:thin:@//localhost:1521/FREEPDB1` for local and `jdbc:oracle:thin:@//oracle:1521/FREEPDB1` for prod).
+3. Configure `DB_USERNAME` and `DB_PASSWORD` in the environment (or in the local `.env` file).
 
 ### Security Considerations
 
@@ -182,7 +182,7 @@ The service uses PostgreSQL. Make sure to:
 This project uses a comprehensive testing strategy:
 
 - **Unit Tests**: Service layer logic is tested in isolation using JUnit and Mockito. Dependencies like repositories, password encoders, and JWT services are mocked to ensure business logic is correct and robust.
-- **Integration Tests**: Controller endpoints are tested using Spring Boot's `@SpringBootTest` and `MockMvc`, with a real PostgreSQL database spun up by Testcontainers. This ensures the full stack (controller, service, repository, and database) works as expected.
+- **Integration Tests**: Controller endpoints are tested using Spring Boot's `@SpringBootTest` and `MockMvc`, with a real Oracle database spun up by Testcontainers. This ensures the full stack (controller, service, repository, and database) works as expected.
 - **JWT Validation**: Integration tests verify that login returns a valid JWT token (correct format, not null).
 
 !!! [note] TestContainer tests are run in CICD Github Actions runners as well.
@@ -194,7 +194,7 @@ This project uses a comprehensive testing strategy:
 ```
 
 - Unit tests run by default.
-- Integration tests automatically start a temporary PostgreSQL container (no need for a running local DB).
+- Integration tests automatically start a temporary Oracle container (no need for a running local DB).
 
 ### What is Covered
 - User signup (success and error cases)
