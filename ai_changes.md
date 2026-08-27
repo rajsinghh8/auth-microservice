@@ -1,8 +1,8 @@
 COMMIT_MESSAGE: Add API endpoint to return the complete user list
 
 ## Features Added
-- Added `GET /api/v1/monitor/services`, which reports the aggregate Spring Actuator health status of the running microservice.
-- Made the monitoring endpoint available alongside the existing public health endpoint.
+- Added authenticated `GET /api/v1/users` to return the complete registered-user list.
+- User-list responses include id, email, and role only; password hashes are not returned.
 
 ## Files Modified
 - src/main/java/com/gab/authservice/config/SecurityConfig.java — permits the monitoring endpoint.
