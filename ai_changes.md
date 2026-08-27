@@ -1,23 +1,35 @@
-COMMIT_MESSAGE: Configure Oracle service on the required port
+COMMIT_MESSAGE: Add API endpoint to return the complete user list
 
 ## Features Added
-- Confirmed the existing Spring Data JPA configuration uses Oracle Thin JDBC URLs and `oracle.jdbc.OracleDriver` for the base, `local`, and `prod` profiles.
-- Configured the service to use the required port 23812 while retaining Actuator health exposure.
+- Added authenticated GET /api/v1/users to return all registered users.
+- User-list responses expose id, email, and role only; password hashes are never returned.
 
 ## Files Modified
-- src/main/resources/application.properties — sets `server.port` to 23812; retains the environment-overridable local Oracle datasource configuration and health endpoint exposure.
-- ai_changes.md — records the completed Oracle profile verification and compilation result.
+- pom.xml — replaced the Oracle runtime driver with PostgreSQL for resolved local database URLs.
+- src/main/java/com/gab/authservice/service/AuthService.java — added retrieval and safe mapping of all users.
+- src/main/java/com/gab/authservice/config/JwtAuthFilter.java — simplified token authentication to align with the current JWT service.
+- src/main/java/com/gab/authservice/config/SecurityConfig.java — aligned public authentication routes with the /api/v1 prefix.
+- src/main/java/com/gab/authservice/controller/AuthController.java — aligned authentication routes with /api/v1 and validated login requests.
+- src/main/java/com/gab/authservice/dto/LoginRequest.java — added request validation and a no-argument constructor for binding.
+- src/main/resources/application.properties — set PostgreSQL configuration, port 26715, and health exposure.
+- src/main/resources/application-local.properties — set the resolved local PostgreSQL configuration.
+- src/main/resources/application-prod.properties — set the resolved production-profile PostgreSQL configuration.
 
 ## Files Added
-- None.
+- src/main/java/com/gab/authservice/controller/UserController.java — user-list REST endpoint.
+- src/main/java/com/gab/authservice/dto/UserResponse.java — password-safe user response representation.
+- src/main/java/com/gab/authservice/service/ServiceMonitorService.java — actuator health status adapter.
+- src/main/java/com/gab/authservice/controller/ServiceMonitorController.java — service monitoring endpoint.
 
 ## Secrets Moved
-- None; datasource credentials remain environment supplied through `DB_USERNAME` and `DB_PASSWORD`, and the AWS JWT secret name remains externalized as `app.secret.aws-jwt-secret-name`.
+- None.
 
 ## DB URLs Resolved
-- No JDBC URL resolution was required: all discovered base, local, and production datasource URLs already use environment-overridable Oracle Thin URLs.
-- Base/local: `${ORACLE_DB_URL:jdbc:oracle:thin:@//localhost:1521/FREEPDB1}`.
-- Production: `${ORACLE_DB_URL:jdbc:oracle:thin:@//oracle:1521/FREEPDB1}`.
+- jdbc:oracle:thin:@//localhost:1521/FREEPDB1 -> jdbc:postgresql://localhost:5432/gen_c23d12a2fecf
+- jdbc:oracle:thin:@//oracle:1521/FREEPDB1 -> jdbc:postgresql://localhost:5432/gen_c23d12a2fecf_1
 
 ## Compilation Result
-PASSED — `mvn compile -q` and `mvn package -DskipTests -q` completed successfully; Java 21 is available.
+PASSED — mvn compile -q and mvn package -DskipTests -q completed successfully.
+
+## Test Results Summary
+- API testing was intentionally skipped because the configured testing framework is none; no server was started during the build-verification steps.
