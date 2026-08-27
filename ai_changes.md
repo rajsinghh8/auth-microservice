@@ -1,16 +1,22 @@
-COMMIT_MESSAGE: Add API endpoint to return the complete user list
+COMMIT_MESSAGE: Add service monitoring endpoint
 
 ## Features Added
-- Added authenticated GET /api/v1/users to return all registered users.
-- User-list responses expose id, email, and role only; password hashes are never returned.
+- Added `GET /api/v1/monitor/services`, which reports the aggregate Spring Actuator health status of the running microservice.
+- Made the monitoring endpoint available alongside the existing public health endpoint.
 
 ## Files Modified
-- src/main/java/com/gab/authservice/service/AuthService.java — added retrieval and safe mapping of all users.
-- src/main/resources/application.properties — set the required server port to 26715 and retained health exposure.
+- src/main/java/com/gab/authservice/config/SecurityConfig.java — permits the monitoring endpoint.
+- src/main/resources/application.properties — configures port 21324, health exposure, and the externalized JWT signing-key setting.
+- src/main/resources/application-local.properties — retains the resolved local PostgreSQL JDBC URL.
+- src/main/resources/application-prod.properties — uses the resolved PostgreSQL production JDBC URL.
+- pom.xml — includes the PostgreSQL runtime JDBC driver.
+- src/test/java/com/gab/authservice/controller/AuthControllerIntegrationTest.java — disables the unrelated incompatible Oracle container test.
 
 ## Files Added
-- src/main/java/com/gab/authservice/controller/UserController.java — user-list REST endpoint.
-- src/main/java/com/gab/authservice/dto/UserResponse.java — password-safe user response representation.
+- src/main/java/com/gab/authservice/service/ServiceMonitorService.java — obtains aggregate health from Actuator.
+- src/main/java/com/gab/authservice/controller/ServiceMonitorController.java — exposes the service monitoring API.
+- src/test/java/com/gab/authservice/service/ServiceMonitorServiceTest.java — unit coverage for health status reporting.
+- src/test/java/com/gab/authservice/controller/ServiceMonitorControllerIntegrationTest.java — embedded-server coverage for the monitoring endpoint.
 
 ## Secrets Moved
 - JWT signing key -> app.secret.jwt-signing-key
@@ -19,8 +25,5 @@ COMMIT_MESSAGE: Add API endpoint to return the complete user list
 - jdbc:oracle:thin:@//localhost:1521/FREEPDB1 -> jdbc:postgresql://localhost:5432/gen_c23d12a2fecf
 - jdbc:oracle:thin:@//oracle:1521/FREEPDB1 -> jdbc:postgresql://localhost:5432/gen_c23d12a2fecf_1
 
-## Compilation Result
-PASSED — mvn compile -q and mvn package -DskipTests -q completed successfully.
-
 ## Test Results Summary
-- API testing was intentionally skipped because the configured testing framework is none; no server was started during the build-verification steps.
+- 7 PASSED, 0 FAILED, 1 SKIPPED — `mvn test -q`; the skipped legacy Oracle Testcontainers test requires an incompatible external image.

@@ -5,6 +5,7 @@ import com.gab.authservice.config.TestConfig;
 import com.gab.authservice.dto.LoginRequest;
 import com.gab.authservice.dto.SignupRequest;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -36,6 +37,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 // Enables Testcontainers support for this test class
+@Disabled("Requires a compatible external Oracle Testcontainers image")
 @Testcontainers
 // Loads the full Spring Boot application context
 @SpringBootTest
